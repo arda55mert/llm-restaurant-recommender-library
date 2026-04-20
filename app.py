@@ -182,7 +182,7 @@ def search(
                 # summary of reviews
                 P(r["summary"]),
                 # highlighting top-ranked restaurant
-                P("Best Pick", style="color:green;"),
+                P("Best Pick", style="color:green;") if i == 0 else None,
                 style="""
                     margin-bottom:25px;
                     padding-bottom:10px;
