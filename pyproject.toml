@@ -1,0 +1,16 @@
+[tool.ruff]
+line-length = 80
+
+[tool.ruff.lint]
+select = [
+"D", # pydocstyle
+"E", # pycodestyle
+"F", # pyflakes
+"I", # isort
+"B", # flake8-bugbear
+"SIM", # flake8-simplify
+"UP", # pyupgrade
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
