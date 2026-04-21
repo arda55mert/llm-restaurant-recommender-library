@@ -50,7 +50,7 @@ Reviews:
         response = requests.post(
             os.getenv("OLLAMA_URL", "http://ollama:11434/api/generate"),
             json={
-                "model": os.getenv("OLLAMA_MODEL", "llama3"),
+                "model": os.getenv("OLLAMA_MODEL", "tinyllama"),
                 "prompt": prompt,
                 "stream": False,
             },
