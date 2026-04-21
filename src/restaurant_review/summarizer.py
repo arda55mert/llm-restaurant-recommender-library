@@ -1,5 +1,7 @@
 """summarizing the reviews."""
 
+import os
+
 import requests  # type: ignore[import-untyped]
 
 
@@ -32,12 +34,13 @@ def llama_summarize(reviews, restaurant_name):
     """
     try:
         response = requests.post(
-            "http://localhost:11434/api/generate",
+            os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate"),
             json={
-                "model": "llama3",
+                "model": os.getenv("OLLAMA_MODEL", "llama3"),
                 "prompt": prompt,
                 "stream": False,
             },
+            timeout=180,
         )
         json_response = response.json()
         return json_response["response"]

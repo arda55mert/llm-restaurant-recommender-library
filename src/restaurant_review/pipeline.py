@@ -38,8 +38,8 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
         if not reviews:
             continue
 
-        # sampling fourty reviews to send to LLaMA
-        sample = random.sample(reviews, min(40, len(reviews)))
+        # sampling ten reviews to send to LLaMA
+        sample = random.sample(reviews, min(10, len(reviews)))
 
         # calling LLaMA to summarize reviews
         raw = llama_summarize(sample, restaurant)
