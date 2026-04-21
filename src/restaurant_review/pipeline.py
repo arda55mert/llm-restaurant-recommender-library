@@ -8,7 +8,7 @@ from restaurant_review.ranker import compute_score
 from restaurant_review.summarizer import llama_summarize
 
 
-def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
+def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=3):
     """It is filtering, summarizing and ranking restaurants."""
     
     # filtering dataset by selected city and cuisine - case insensitive and ignoring leading/trailing spaces
@@ -45,8 +45,8 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
         if not reviews:
             continue
 
-        # sampling five reviews to send to LLaMA
-        sample = random.sample(reviews, min(5, len(reviews)))
+        # sampling eight reviews to send to LLaMA
+        sample = random.sample(reviews, min(10, len(reviews)))
 
         # calling LLaMA to summarize reviews
         parsed = llama_summarize(sample, restaurant)
