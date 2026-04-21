@@ -10,8 +10,12 @@ from restaurant_review.summarizer import llama_summarize
 
 def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
     """It is filtering, summarizing and ranking restaurants."""
-    # filtering dataset by selected city and cuisine
-    filtered = df[(df["City"] == city) & (df["Cuisine"] == cuisine)]
+    
+    # filtering dataset by selected city and cuisine - case insensitive and ignoring leading/trailing spaces
+    filtered = df[
+        (df["City"].str.strip().str.lower() == city.strip().lower()) &
+        (df["Cuisine"].str.strip().str.lower().str.contains(cuisine.strip().lower()))
+    ]
 
     # if no restaurants match, return empty list
     if filtered.empty:
@@ -26,6 +30,9 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
         }
     )
 
+    # limiting to top 3 restaurants by average rating to reduce LLaMA calls
+    grouped = grouped.head(3)
+
     results = []
 
     # iterating through each restaurant
@@ -38,7 +45,7 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
         if not reviews:
             continue
 
-        # sampling ten reviews to send to LLaMA
+        # sampling five reviews to send to LLaMA
         sample = random.sample(reviews, min(5, len(reviews)))
 
         # calling LLaMA to summarize reviews
