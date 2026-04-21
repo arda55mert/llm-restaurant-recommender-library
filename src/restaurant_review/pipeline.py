@@ -49,17 +49,7 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
         sample = random.sample(reviews, min(5, len(reviews)))
 
         # calling LLaMA to summarize reviews
-        raw = llama_summarize(sample, restaurant)
-
-        # extracting JSON from LLaMA output
-        try:
-            match = re.search(r"\{.*\}", raw, re.DOTALL)
-            if not match:
-                continue
-            # converting JSON string to a dictionary
-            parsed = json.loads(match.group())
-        except Exception:
-            continue
+        parsed = llama_summarize(sample, restaurant)
 
         # computing overall score based on user weights
         try:
