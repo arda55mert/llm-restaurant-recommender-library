@@ -1,7 +1,7 @@
 """summarizing the reviews."""
 
 import json
-import re
+import os
 
 import requests  # type: ignore[import-untyped]
 
@@ -11,47 +11,55 @@ def llama_summarize(reviews, restaurant_name):
     text = "\n".join(reviews)
 
     prompt = f"""
-    you are analyzing all reviews for one restaurant.
 
-    aggregate all reviews into one summary.
+    Return exactly one JSON object and nothing else.
 
-    do not summarize each review separately.
-    do not return multiple objects.
-    return only one valid JSON object.
-    do not include markdown fences.
-    do not include any text before or after the JSON.
+    Keys:
+    - restaurantName: string
+    - foodQuality: integer 1 to 10
+    - service: integer 1 to 10
+    - value: integer 1 to 10
+    - overallSentiment: positive, neutral, or negative
+    - summary: 2 to 3 sentence summary
+    - reason: 1 short sentence
 
-    Format:
+    Return this JSON structure:
     {{
-    "restaurantName": "{restaurant_name}",
-    "foodQuality": 1-10,
-    "service": 1-10,
-    "value": 1-10,
-    "overallSentiment": "positive",
-    "summary": "two-three sentence thorough summary",
-    "reason": "one short sentence explaining why this restaurant ranks well"
+    "restaurantName": "<restaurant name>",
+    "foodQuality": <1-10>,
+    "service": <1-10>,
+    "value": <1-10>,
+    "overallSentiment": "<positive|neutral|negative>",
+    "summary": "<2-3 sentence summary>",
+    "reason": "<1 short sentence>"
     }}
 
+    Restaurant: {restaurant_name}
     Reviews:
     {text}
     """
 
     response = requests.post(
-        "http://localhost:11434/api/generate",
-        json={
-            "model": "llama3",
-            "prompt": prompt,
-            "stream": False,
-        },
-        timeout=180,
-    )
+    os.getenv("OLLAMA_URL", "http://ollama:11434/api/generate"),
+    json={
+        "model": os.getenv("OLLAMA_MODEL", "llama3"),
+        "prompt": prompt,
+        "stream": False,
+    },
+    timeout=180,
+)
     response.raise_for_status()
 
     json_response = response.json()
     response_text = json_response["response"].strip()
 
-    match = re.search(r"\{.*\}", response_text, re.DOTALL)
-    if not match:
+    print("RAW MODEL RESPONSE:", response_text)
+
+    start = response_text.find("{")
+    end = response_text.rfind("}")
+
+    if start == -1 or end == -1 or end <= start:
         raise ValueError("Model did not return JSON.")
 
-    return json.loads(match.group(0))
+    candidate = response_text[start : end + 1]
+    return json.loads(candidate)

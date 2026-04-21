@@ -30,9 +30,8 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=3):
         }
     )
 
-    # limiting to top 3 restaurants by average rating to reduce LLaMA calls
-    grouped = grouped.head(3)
-
+    # limiting to top 5 restaurants by average rating to reduce LLaMA calls
+    grouped = grouped.sort_values("Customer Star", ascending=False).head(5)
     results = []
 
     # iterating through each restaurant
@@ -46,7 +45,7 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=3):
             continue
 
         # sampling eight reviews to send to LLaMA
-        sample = random.sample(reviews, min(10, len(reviews)))
+        sample = random.sample(reviews, min(8, len(reviews)))
 
         # calling LLaMA to summarize reviews
         parsed = llama_summarize(sample, restaurant)
