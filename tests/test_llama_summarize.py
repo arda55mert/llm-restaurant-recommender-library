@@ -1,8 +1,10 @@
 """Test llama summarizer function."""
 
 import json
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
+import requests  # type: ignore[import-untyped]
 
 from restaurant_review.summarizer import llama_summarize
 
@@ -39,11 +41,14 @@ def test_llama_summarize_returns_response():
 
 def test_llama_summarize_connection_failure():
     """Test llama_summarize: Failed to connect to llama."""
-    with patch(
-        "restaurant_review.summarizer.requests.post", side_effect=Exception
+    with (
+        patch(
+            "restaurant_review.summarizer.requests.post",
+            side_effect=requests.exceptions.RequestException,
+        ),
+        pytest.raises(requests.exceptions.RequestException),
     ):
-        with pytest.raises(Exception):
-            llama_summarize(["good food", "great service"], "Pizza Place")
+        llama_summarize(["good food", "great service"], "Pizza Place")
 
 
 def test_llama_summarize_json_error():
@@ -52,11 +57,14 @@ def test_llama_summarize_json_error():
     mock_response.raise_for_status.return_value = None
     mock_response.json.return_value = {"response": "{not valid json}"}
 
-    with patch(
-        "restaurant_review.summarizer.requests.post", return_value=mock_response
+    with (
+        patch(
+            "restaurant_review.summarizer.requests.post",
+            return_value=mock_response,
+        ),
+        pytest.raises(json.JSONDecodeError),
     ):
-        with pytest.raises(json.JSONDecodeError):
-            llama_summarize(["good food", "great service"], "Pizza Place")
+        llama_summarize(["good food", "great service"], "Pizza Place")
 
 
 def test_llama_summarize_missing_response():
@@ -65,8 +73,11 @@ def test_llama_summarize_missing_response():
     mock_response.raise_for_status.return_value = None
     mock_response.json.return_value = {"response": "no json here at all"}
 
-    with patch(
-        "restaurant_review.summarizer.requests.post", return_value=mock_response
+    with (
+        patch(
+            "restaurant_review.summarizer.requests.post",
+            return_value=mock_response,
+        ),
+        pytest.raises(ValueError),
     ):
-        with pytest.raises(ValueError):
-            llama_summarize(["good food", "great service"], "Pizza Place")
+        llama_summarize(["good food", "great service"], "Pizza Place")
