@@ -21,8 +21,8 @@ services:
     command:
       - -c
       - |
-        echo "Pulling tinyllama model..."
-        ollama pull tinyllama
+        echo "Pulling llama3 model..."
+        ollama pull llama3
     environment:
       OLLAMA_HOST: http://ollama:11434
     restart: "no"
