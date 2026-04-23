@@ -40,14 +40,14 @@ def llama_summarize(reviews, restaurant_name):
     """
 
     response = requests.post(
-    os.getenv("OLLAMA_URL", "http://ollama:11434/api/generate"),
-    json={
-        "model": os.getenv("OLLAMA_MODEL", "llama3"),
-        "prompt": prompt,
-        "stream": False,
-    },
-    timeout=180,
-)
+        os.getenv("OLLAMA_URL", "http://ollama:11434/api/generate"),
+        json={
+            "model": os.getenv("OLLAMA_MODEL", "llama3"),
+            "prompt": prompt,
+            "stream": False,
+        },
+        timeout=180,
+    )
     response.raise_for_status()
 
     json_response = response.json()

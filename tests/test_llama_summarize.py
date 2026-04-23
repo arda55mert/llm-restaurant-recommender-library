@@ -27,6 +27,7 @@ def test_llama_summarize_returns_response():
         result = llama_summarize(["good food", "great service"], "Pizza Place")
 
     assert result == {
+        "restaurantName": "Pizza Place",
         "foodQuality": 8,
         "service": 7,
         "value": 6,
