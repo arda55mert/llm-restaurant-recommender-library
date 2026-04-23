@@ -8,8 +8,9 @@ from restaurant_review.ranker import compute_score
 from restaurant_review.summarizer import llama_summarize
 
 
-def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
+def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=3):
     """It is filtering, summarizing and ranking restaurants."""
+
     # filtering dataset by selected city and cuisine
     filtered = df[(df["City"] == city) & (df["Cuisine"] == cuisine)]
 
@@ -26,6 +27,8 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
         }
     )
 
+    # limiting to top 5 restaurants by average rating to reduce LLaMA calls
+    grouped = grouped.sort_values("Customer Star", ascending=False).head(5)
     results = []
 
     # iterating through each restaurant
@@ -38,19 +41,13 @@ def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=5):
         if not reviews:
             continue
 
-        # sampling fourty reviews to send to LLaMA
-        sample = random.sample(reviews, min(40, len(reviews)))
+        # sampling eight reviews to send to LLaMA
+        sample = random.sample(reviews, min(8, len(reviews)))
 
         # calling LLaMA to summarize reviews
-        raw = llama_summarize(sample, restaurant)
-
-        # extracting JSON from LLaMA output
         try:
-            match = re.search(r"\{.*\}", raw, re.DOTALL)
-            if not match:
-                continue
-            # converting JSON string to a dictionary
-            parsed = json.loads(match.group())
+            parsed = llama_summarize(sample, restaurant)
+            score = compute_score(parsed, weights)
         except Exception:
             continue
 

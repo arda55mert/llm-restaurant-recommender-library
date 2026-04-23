@@ -53,13 +53,19 @@ cd restaurant-review-library
 pip install .
 ```
 
-## installing test requirement libraries
+## start the app
 
 ```bash
-pip install -r requirements-test.txt
+docker compose up --build
 ```
-## Run the App
 
+## testing
 ```bash
-PYTHONPATH=src python -m uvicorn app:app --reload
+pytest
 ```
+
+## AI Disclosure
+We used ChatGPT to generate a synthetic dataset of restaurant reviews by prompting it to create approximately 100,000 entries in CSV format, including restaurant names, cities (Durham, Nashville, San Diego, Dallas, New York), cuisine types, price ranges, customer ratings and varied-length customer comments with both positive and negative feedback. GPT produced a diverse, non-repetitive set of reviews with a range of star ratings and detail levels, which we used as input data to develop and test the restaurant recommendation and summarization pipeline. 
+
+Additionally ChatGPT provided small-scale assistance with generating Dockerfile templates, debugging issues, recommending the unittest.mock package for testing, and offering styling suggestions for the frontend page layout.
+
