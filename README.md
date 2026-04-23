@@ -53,13 +53,8 @@ cd restaurant-review-library
 pip install .
 ```
 
-## installing test requirement libraries
+## start the app
 
 ```bash
-pip install -r requirements-test.txt
-```
-## Run the App
-
-```bash
-PYTHONPATH=src python -m uvicorn app:app --reload
+docker compose up --build
 ```
