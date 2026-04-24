@@ -1,6 +1,7 @@
 """Test compute_score function."""
 
 import pytest
+
 from restaurant_review.ranker import compute_score
 
 

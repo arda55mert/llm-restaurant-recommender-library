@@ -1,7 +1,8 @@
 """Tests for getTopRestaurants function."""
 
-import pandas as pd
 from unittest.mock import patch
+
+import pandas as pd
 
 from restaurant_review.pipeline import getTopRestaurants
 

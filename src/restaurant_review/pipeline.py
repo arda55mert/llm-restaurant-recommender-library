@@ -1,8 +1,6 @@
 """processing & ranking the reviews."""
 
-import json
 import random
-import re
 
 from restaurant_review.ranker import compute_score
 from restaurant_review.summarizer import llama_summarize
@@ -10,7 +8,6 @@ from restaurant_review.summarizer import llama_summarize
 
 def getTopRestaurants(df, city, cuisine, weights, sort_by="Overall", topK=3):
     """It is filtering, summarizing and ranking restaurants."""
-
     # filtering dataset by selected city and cuisine
     filtered = df[(df["City"] == city) & (df["Cuisine"] == cuisine)]
 
